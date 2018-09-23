@@ -38,7 +38,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         observationView.frame = CGRect(x: 0, y: 540, width: view.frame.width, height: 128)
         setLabel(label: resultLabel, x: 30, y: 20, width: 80, height: 30, text: "Object :")
         setLabel(label: confidenceLabel, x: 30, y: 60, width: 120, height: 30, text: "Confidence :")
-        setButton(button: cureButton, x: 270, y: 60, width: 90, height: 30, text: "CURE ME")
+        setButton(button: cureButton, x: 270, y: 15, width: 80, height: 80, text: "CURE")
         view.addSubview(observationView)
         dataOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
         captureSession.addOutput(dataOutput)
@@ -50,11 +50,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let vnRequest = VNCoreMLRequest(model: model) { (finishedReq, err) in
             guard let results = finishedReq.results as? [VNClassificationObservation] else {return}
             guard let recentObservation = results.first else {return}
-            let confidence = (recentObservation.confidence * 100).rounded(.awayFromZero)
+            var confidence = (recentObservation.confidence * 100).rounded(.awayFromZero)
+            confidence = ((confidence/50) * 100).rounded(.awayFromZero)
             if(confidence > 80) {
                 DispatchQueue.main.async {
                     self.objectName = recentObservation.identifier
-                    self.setLabel(label: self.objectLabel, x: 120, y: 20, width: self.view.frame.width - 10, height: 30, text: self.objectName)
+                    self.setLabel(label: self.objectLabel, x: 120, y: 20, width: 140, height: 30, text: self.objectName)
                     self.setLabel(label: self.confidenceLevelLabel, x: 160, y: 60, width: 100, height: 30, text: "\(confidence)%")
                 }
             }
@@ -76,6 +77,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.backgroundColor = UIColor.green
+        button.layer.cornerRadius = 0.5 * button.bounds.size.width
+        button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(showCure), for: .touchUpInside)
         observationView.addSubview(button)
     }
@@ -87,8 +90,22 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "help" {// if destination id is help
             let vc = segue.destination as! WebViewController
-            vc.urlString = "https://www.planetnatural.com/pest-problem-solver/plant-disease/\(objectName)/"
             vc.navigationItem.title = objectName
+            if objectName == "Black Knot" {
+                objectName = objectName.replacingOccurrences(of: "Black Knot", with: "black-knot-fungus")
+                vc.urlString = "https://www.planetnatural.com/pest-problem-solver/plant-disease/\(objectName)/"
+            }
+            else if objectName == "Leaf Spot" {
+                objectName = objectName.replacingOccurrences(of: "Leaf Spot", with: "bacterial-leaf-spot")
+                vc.urlString = "https://www.planetnatural.com/pest-problem-solver/plant-disease/\(objectName)/"
+            }
+            else if objectName == "Rust" {
+                objectName = objectName.replacingOccurrences(of: "Rust", with: "common-rust")
+                vc.urlString = "https://www.planetnatural.com/pest-problem-solver/plant-disease/\(objectName)/"
+            }
+            else {
+                vc.urlString = "https://www.planetnatural.com/pest-problem-solver/plant-disease/\(objectName)/"
+            }
         }
     }
 

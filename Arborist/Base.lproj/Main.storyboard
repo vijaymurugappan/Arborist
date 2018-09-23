@@ -52,7 +52,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="y45-6s-Q9r"/>
                     <connections>
-                        <outlet property="webView" destination="TOy-mn-nJE" id="9nt-Na-Nwr"/>
+                        <outlet property="webView" destination="TOy-mn-nJE" id="GOf-bH-ZpJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="z9B-nf-jpO" userLabel="First Responder" sceneMemberID="firstResponder"/>

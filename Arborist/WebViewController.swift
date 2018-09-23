@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import WebKit
 
 class WebViewController: UIViewController {
     
-    @IBOutlet weak var webView: UIWebView!
+    @IBOutlet weak var webView: WKWebView!
     
     var urlString = String()
 
@@ -22,7 +23,9 @@ class WebViewController: UIViewController {
         let task = session.dataTask(with: request) {
             (data,response,error) in
             if error == nil {
-                self.webView.loadRequest(request)
+                DispatchQueue.main.async {
+                    self.webView.load(request)
+                }
             }
             else {
                 //Error
